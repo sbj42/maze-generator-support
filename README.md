@@ -10,7 +10,7 @@ library, and the various maze algorithm plugins designed to work with it.
 A collection of cardinal direction utilities.
 
 ```
-var dirs = require('@sbj42/maze-generator-support/directions');
+var dirs = require('@sbj42/maze-generator-support').directions;
 ```
 
 `dirs.NORTH` / `dirs.EAST` / `dirs.SOUTH` / `dirs.WEST`
@@ -30,7 +30,7 @@ Returns the opposite of the direction given.
 A rectangular grid of boolean values, useful for marking visited cells in a maze.
 
 ```
-var GridMask = require('@sbj42/maze-generator-support/GridMask');
+var GridMask = require('@sbj42/maze-generator-support').GridMask;
 ```
 
 `new GridMask(width, height, options)`
@@ -61,7 +61,7 @@ A rectangular grid of cells, each of which may have passages in one or more of t
 cardinal directions.
 
 ```
-var Maze = require('@sbj42/maze-generator-support/Maze');
+var Maze = require('@sbj42/maze-generator-support').Maze;
 ```
 
 `new Maze(width, height)`
@@ -92,6 +92,9 @@ to a cell outside the bounds.  This always adds the corresponding passage in the
 neighboring cell, so that the two cells have passages leading to each other.
 
 ## Cell
+
+An object representing a cell in a maze.  There is no exported constructor, you have to
+get cell objects by calling `maze.cell(x, y)`.
 
 `cell.north()` / `cell.east()` / `cell.south()` / `cell.west()`
 
