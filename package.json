@@ -22,7 +22,6 @@
   "homepage": "https://github.com/sbj42/maze-generator-support#readme",
   "devDependencies": {
     "eslint": "^3.7.1",
-    "mocha": "^3.1.0",
-    "random-js": "^1.0.8"
+    "mocha": "^3.1.0"
   }
 }
