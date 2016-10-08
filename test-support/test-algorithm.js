@@ -28,6 +28,8 @@ function testAlgorithm(algorithmName, algorithm) {
             var options = {};
             if (seed)
                 options.random = makeRandom(seed);
+            else
+                options.random = Math.random;
             var maze = new Maze(width, height);
             algorithm(maze, options);
             return maze;
