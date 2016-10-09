@@ -1,5 +1,14 @@
 var dirs = require('./directions');
 
+/**
+ * A Cell is a wrapper object that makes it easier to
+ * ask for passage information by name.
+ *
+ * @constructor
+ * @private
+ * @param {integer} width
+ * @param {integer} height
+ */
 function Cell(data) {
     this._data = data;
 }
@@ -24,6 +33,15 @@ Cell.prototype.east = function() {
     return cellPassage(this._data, dirs.EAST);
 };
 
+/**
+ * A Maze is a rectangular grid of cells, where each cell
+ * may have passages in each of the cardinal directions.
+ * The maze is initialized with each cell having no passages.
+ *
+ * @constructor
+ * @param {integer} width
+ * @param {integer} height
+ */
 function Maze(width, height) {
     if (width < 0 || height < 0)
         throw new Error('invalid size: ' + width + 'x' + height);
@@ -34,10 +52,20 @@ function Maze(width, height) {
         this._grid.push(0);
 }
 
+/**
+ * The width of the Maze
+ *
+ * @return {integer}
+ */
 Maze.prototype.width = function() {
     return this._width;
 };
 
+/**
+ * The height of the Maze
+ *
+ * @return {integer}
+ */
 Maze.prototype.height = function() {
     return this._height;
 };
@@ -53,16 +81,41 @@ function setCellPassage(grid, width, x, y, dir, value) {
         grid[y * width + x] &= ~dirs.bitmask(dir);
 }
 
+/**
+ * Returns the cell at the given position.
+ *
+ * @param {integer} x
+ * @param {integer} y
+ * @return {Cell}
+ */
 Maze.prototype.cell = function(x, y) {
     if (x < 0 || y < 0 || x >= this.width() || y >= this.height())
         return new Cell(0);
     return new Cell(cellData(this._grid, this._width, x, y));
 };
 
+/**
+ * Returns whether there is a passage at the given position and
+ * direction
+ *
+ * @param {integer} x
+ * @param {integer} y
+ * @param {Direction} dir
+ */
 Maze.prototype.getPassage = function(x, y, dir) {
     return cellPassage(cellData(this._grid, this._width, x, y), dir);
 };
 
+/**
+ * Creates or removes a passage at the given position and
+ * direction.  Note that this also creates the corresponding
+ * passage in the neighboring cell.
+ *
+ * @param {integer} x
+ * @param {integer} y
+ * @param {Direction} dir
+ * @param {boolean} value
+ */
 Maze.prototype.setPassage = function(x, y, dir, value) {
     if (value == null)
         value = true;
