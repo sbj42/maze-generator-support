@@ -48,7 +48,8 @@ function Maze(width, height) {
     this._width = width;
     this._height = height;
     this._grid = [];
-    for (var i = 0; i < width * height; i ++)
+    this._blockWidth = (width+7) >> 3;
+    for (var i = 0; i < this._blockWidth * height; i ++)
         this._grid.push(0);
 }
 
@@ -70,15 +71,20 @@ Maze.prototype.height = function() {
     return this._height;
 };
 
-function cellData(grid, width, x, y) {
-    return grid[y * width + x];
+function cellData(grid, blockWidth, x, y) {
+    var index = y * blockWidth + (x >> 3);
+    var shift = ((x & 7) * 4);
+    return (grid[index] >> shift) & 15;
 }
 
-function setCellPassage(grid, width, x, y, dir, value) {
+function setCellPassage(grid, blockWidth, x, y, dir, value) {
+    var index = y * blockWidth + (x >> 3);
+    var shift = ((x & 7) * 4);
+    var mask = dirs.bitmask(dir) << shift;
     if (value)
-        grid[y * width + x] |= dirs.bitmask(dir);
+        grid[index] |= mask;
     else
-        grid[y * width + x] &= ~dirs.bitmask(dir);
+        grid[index] &= ~mask;
 }
 
 /**
@@ -89,9 +95,9 @@ function setCellPassage(grid, width, x, y, dir, value) {
  * @return {Cell}
  */
 Maze.prototype.cell = function(x, y) {
-    if (x < 0 || y < 0 || x >= this.width() || y >= this.height())
+    if (x < 0 || y < 0 || x >= this._width || y >= this._height)
         return new Cell(0);
-    return new Cell(cellData(this._grid, this._width, x, y));
+    return new Cell(cellData(this._grid, this._blockWidth, x, y));
 };
 
 /**
@@ -103,7 +109,7 @@ Maze.prototype.cell = function(x, y) {
  * @param {Direction} dir
  */
 Maze.prototype.getPassage = function(x, y, dir) {
-    return cellPassage(cellData(this._grid, this._width, x, y), dir);
+    return cellPassage(cellData(this._grid, this._blockWidth, x, y), dir);
 };
 
 /**
@@ -119,15 +125,15 @@ Maze.prototype.getPassage = function(x, y, dir) {
 Maze.prototype.setPassage = function(x, y, dir, value) {
     if (value == null)
         value = true;
-    if (x < 0 || y < 0 || x >= this.width() || y >= this.height())
+    if (x < 0 || y < 0 || x >= this._width || y >= this._height)
         throw new Error('source cell out of bounds: ' + x + ',' + y);
     var x2 = x + dirs.dx(dir);
     var y2 = y + dirs.dy(dir);
-    if (x2 < 0 || y2 < 0 || x2 >= this.width() || y2 >= this.height())
+    if (x2 < 0 || y2 < 0 || x2 >= this._width || y2 >= this._height)
         throw new Error('target cell out of bounds: ' + x2 + ',' + y2);
-    setCellPassage(this._grid, this._width, x, y, dir, value);
+    setCellPassage(this._grid, this._blockWidth, x, y, dir, value);
     var dir2 = dirs.opposite(dir);
-    setCellPassage(this._grid, this._width, x2, y2, dir2, value);
+    setCellPassage(this._grid, this._blockWidth, x2, y2, dir2, value);
 };
 
 module.exports = Maze;

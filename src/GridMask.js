@@ -57,7 +57,7 @@ GridMask.prototype.height = function() {
  * @param {integer} y
  */
 GridMask.prototype.get = function(x, y) {
-    if (x < 0 || x >= this.width() || y < 0 || y >= this.height()) {
+    if (x < 0 || x >= this._width || y < 0 || y >= this._height) {
         return this._exterior;
     }
     var index = y * this._blockWidth + (x >> 5);
@@ -71,18 +71,20 @@ GridMask.prototype.get = function(x, y) {
  *
  * @param {integer} x
  * @param {integer} y
- * @param {boolean} value
+ * @param {boolean} [value=true]
  */
 GridMask.prototype.set = function(x, y, value) {
-    if (x < 0 || x >= this.width() || y < 0 || y >= this.height()) {
+    if (value == null)
+        value = true;
+    if (x < 0 || x >= this._width || y < 0 || y >= this._height) {
         throw new Error('cell out of bounds: ' + x + ',' + y);
     }
     var index = y * this._blockWidth + (x >> 5);
     var mask = 1 << (x & 31);
     if (value)
-        this._grid[index] = this._grid[index] | mask;
+        this._grid[index] |= mask;
     else
-        this._grid[index] = this._grid[index] & ~mask;
+        this._grid[index] &= ~mask;
     return this;
 };
 

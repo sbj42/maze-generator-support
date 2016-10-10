@@ -79,7 +79,7 @@ describe('GridMask', function() {
 
         it('should change the value at the given cell', function() {
             var m1 = gen(7, 9);
-            m1.set(3, 4, true);
+            m1.set(3, 4);
             assert.equal(m1.get(3, 4), true);
             assert.equal(m1.get(4, 3), false);
             m1.set(3, 4, false);

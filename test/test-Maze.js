@@ -106,7 +106,7 @@ describe('Maze', function() {
             var m1 = gen(3, 6);
             for (var i = 0; i < dirs.ALL.length; i ++) {
                 var dir = dirs.ALL[i];
-                m1.setPassage(1, 1, dir, true);
+                m1.setPassage(1, 1, dir);
                 assert.equal(m1.getPassage(1, 1, dir), true);
                 assert.equal(m1.getPassage(1, 1, dirs.opposite(dir)), false);
                 assert.equal(cellPassageCount(m1.cell(1, 1)), 1);
