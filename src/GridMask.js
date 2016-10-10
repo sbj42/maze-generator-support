@@ -25,8 +25,10 @@ function GridMask(width, height, options) {
     this._exterior = false;
     if (options.exterior != null)
         this._exterior = !!options.exterior;
-    for (var i = 0; i < width * height; i ++) {
-        this._grid.push(interior);
+    var initBlock = interior ? ~0 : 0;
+    this._blockWidth = (width+31) >> 5;
+    for (var i = 0; i < this._blockWidth * height; i ++) {
+        this._grid.push(initBlock);
     }
 }
 
@@ -58,7 +60,9 @@ GridMask.prototype.get = function(x, y) {
     if (x < 0 || x >= this.width() || y < 0 || y >= this.height()) {
         return this._exterior;
     }
-    return this._grid[y * this.width() + x];
+    var index = y * this._blockWidth + (x >> 5);
+    var mask = 1 << (x & 31);
+    return (this._grid[index] & mask) != 0;
 };
 
 /**
@@ -73,7 +77,12 @@ GridMask.prototype.set = function(x, y, value) {
     if (x < 0 || x >= this.width() || y < 0 || y >= this.height()) {
         throw new Error('cell out of bounds: ' + x + ',' + y);
     }
-    this._grid[y * this.width() + x] = value;
+    var index = y * this._blockWidth + (x >> 5);
+    var mask = 1 << (x & 31);
+    if (value)
+        this._grid[index] = this._grid[index] | mask;
+    else
+        this._grid[index] = this._grid[index] & ~mask;
     return this;
 };
 
