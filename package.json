@@ -1,7 +1,7 @@
 {
-  "name": "@sbj42/maze-generator-support",
+  "name": "@sbj42/maze-generator-core",
   "version": "0.1.0",
-  "description": "A support library for maze generator algorithms",
+  "description": "Core library for maze generator algorithms",
   "main": "src",
   "scripts": {
     "lint": "eslint .",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sbj42/maze-generator-support.git"
+    "url": "git+https://github.com/sbj42/maze-generator-core.git"
   },
   "keywords": [
     "maze-generator"
@@ -17,9 +17,9 @@
   "author": "James Clark <jameswclark@gmail.com> (http://arbitraryclark.blogspot.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sbj42/maze-generator-support/issues"
+    "url": "https://github.com/sbj42/maze-generator-core/issues"
   },
-  "homepage": "https://github.com/sbj42/maze-generator-support#readme",
+  "homepage": "https://github.com/sbj42/maze-generator-core#readme",
   "devDependencies": {
     "eslint": "^3.7.1",
     "mocha": "^3.1.0"
