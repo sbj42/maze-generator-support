@@ -9,28 +9,27 @@ var dirs = require('./directions');
  * @param {integer} width
  * @param {integer} height
  */
-function Cell(data) {
-    this._data = data;
-}
-
-function cellPassage(data, dir) {
-    return !!(data & dirs.bitmask(dir));
+function Cell(north, east, south, west) {
+    this._north = north;
+    this._east = east;
+    this._south = south;
+    this._west = west;
 }
 
 Cell.prototype.north = function() {
-    return cellPassage(this._data, dirs.NORTH);
+    return this._north;
 };
 
 Cell.prototype.west = function() {
-    return cellPassage(this._data, dirs.WEST);
+    return this._west;
 };
 
 Cell.prototype.south = function() {
-    return cellPassage(this._data, dirs.SOUTH);
+    return this._south;
 };
 
 Cell.prototype.east = function() {
-    return cellPassage(this._data, dirs.EAST);
+    return this._east;
 };
 
 /**
@@ -48,8 +47,8 @@ function Maze(width, height) {
     this._width = width;
     this._height = height;
     this._grid = [];
-    this._blockWidth = (width+7) >> 3;
-    for (var i = 0; i < this._blockWidth * height; i ++)
+    this._blockWidth = ((width+1)+15) >> 4;
+    for (var i = 0; i < this._blockWidth * (height + 1); i ++)
         this._grid.push(0);
 }
 
@@ -71,21 +70,21 @@ Maze.prototype.height = function() {
     return this._height;
 };
 
-function cellData(grid, blockWidth, x, y) {
-    var index = y * blockWidth + (x >> 3);
-    var shift = ((x & 7) * 4);
-    return (grid[index] >> shift) & 15;
-}
-
-function setCellPassage(grid, blockWidth, x, y, dir, value) {
-    var index = y * blockWidth + (x >> 3);
-    var shift = ((x & 7) * 4);
-    var mask = dirs.bitmask(dir) << shift;
-    if (value)
-        grid[index] |= mask;
-    else
-        grid[index] &= ~mask;
-}
+// function cellData(grid, blockWidth, x, y) {
+//     var index = y * blockWidth + (x >> 3);
+//     var shift = ((x & 7) * 4);
+//     return (grid[index] >> shift) & 15;
+// }
+//
+// function setCellPassage(grid, blockWidth, x, y, dir, value) {
+//     var index = y * blockWidth + (x >> 3);
+//     var shift = ((x & 7) * 4);
+//     var mask = dirs.bitmask(dir) << shift;
+//     if (value)
+//         grid[index] |= mask;
+//     else
+//         grid[index] &= ~mask;
+// }
 
 /**
  * Returns the cell at the given position.
@@ -96,8 +95,18 @@ function setCellPassage(grid, blockWidth, x, y, dir, value) {
  */
 Maze.prototype.cell = function(x, y) {
     if (x < 0 || y < 0 || x >= this._width || y >= this._height)
-        return new Cell(0);
-    return new Cell(cellData(this._grid, this._blockWidth, x, y));
+        return new Cell(false, false, false, false);
+    var north, east, south, west;
+    var index = y * this._blockWidth + (x >> 4);
+    var mask = 1 << ((x & 15) * 2);
+    north = (this._grid[index] & mask) != 0;
+    west = (this._grid[index] & (mask << 1)) != 0;
+    south = (this._grid[index + this._blockWidth] & mask) != 0;
+    var x2 = x + 1;
+    var index2 = y * this._blockWidth + (x2 >> 4);
+    var mask2 = 1 << ((x2 & 15) * 2);
+    east = (this._grid[index2] & (mask2 << 1)) != 0;
+    return new Cell(north, east, south, west);
 };
 
 /**
@@ -109,7 +118,23 @@ Maze.prototype.cell = function(x, y) {
  * @param {Direction} dir
  */
 Maze.prototype.getPassage = function(x, y, dir) {
-    return cellPassage(cellData(this._grid, this._blockWidth, x, y), dir);
+    if (x < 0 || y < 0 || x >= this._width || y >= this._height)
+        return false;
+    var index, mask;
+    if (dir != dirs.EAST) {
+        index = y * this._blockWidth + (x >> 4);
+        mask = 1 << ((x & 15) * 2);
+        if (dir == dirs.NORTH)
+            /* pass through */;
+        else if (dir == dirs.WEST)
+            mask <<= 1;
+        else
+            index += this._blockWidth;
+    } else {
+        index = y * this._blockWidth + ((x + 1) >> 4);
+        mask = 1 << (((x + 1) & 15) * 2 + 1);
+    }
+    return (this._grid[index] & mask) != 0;
 };
 
 /**
@@ -125,15 +150,32 @@ Maze.prototype.getPassage = function(x, y, dir) {
 Maze.prototype.setPassage = function(x, y, dir, value) {
     if (value == null)
         value = true;
-    if (x < 0 || y < 0 || x >= this._width || y >= this._height)
-        throw new Error('source cell out of bounds: ' + x + ',' + y);
-    var x2 = x + dirs.dx(dir);
-    var y2 = y + dirs.dy(dir);
-    if (x2 < 0 || y2 < 0 || x2 >= this._width || y2 >= this._height)
-        throw new Error('target cell out of bounds: ' + x2 + ',' + y2);
-    setCellPassage(this._grid, this._blockWidth, x, y, dir, value);
-    var dir2 = dirs.opposite(dir);
-    setCellPassage(this._grid, this._blockWidth, x2, y2, dir2, value);
+    var index, mask;
+    if (dir != dirs.EAST) {
+        index = y * this._blockWidth + (x >> 4);
+        mask = 1 << ((x & 15) * 2);
+        if (dir == dirs.NORTH) {
+            if (x < 0 || y < 1 || x >= this._width || y >= this._height)
+                throw new Error('passage out of bounds: ' + x + ',' + y + ' dir=' + dir);
+        } else if (dir == dirs.WEST) {
+            if (x < 1 || y < 0 || x >= this._width || y >= this._height)
+                throw new Error('passage out of bounds: ' + x + ',' + y + ' dir=' + dir);
+            mask <<= 1;
+        } else {
+            if (x < 0 || y < 0 || x >= this._width || y >= this._height - 1)
+                throw new Error('passage out of bounds: ' + x + ',' + y + ' dir=' + dir);
+            index += this._blockWidth;
+        }
+    } else {
+        if (x < 0 || y < 0 || x >= this._width - 1 || y >= this._height)
+            throw new Error('passage out of bounds: ' + x + ',' + y + ' dir=' + dir);
+        index = y * this._blockWidth + ((x + 1) >> 4);
+        mask = 1 << (((x + 1) & 15) * 2 + 1);
+    }
+    if (value)
+        this._grid[index] |= mask;
+    else
+        this._grid[index] &= ~mask;
 };
 
 module.exports = Maze;
