@@ -21,14 +21,14 @@ function GridMask(width, height, options) {
         interior = !!options.interior;
     this._width = width;
     this._height = height;
-    this._grid = [];
     this._exterior = false;
     if (options.exterior != null)
         this._exterior = !!options.exterior;
-    var initBlock = interior ? ~0 : 0;
     this._blockWidth = (width+31) >> 5;
+    this._grid = new Array(this._blockWidth * height);
+    var initBlock = interior ? ~0 : 0;
     for (var i = 0; i < this._blockWidth * height; i ++) {
-        this._grid.push(initBlock);
+        this._grid[i] = initBlock;
     }
 }
 

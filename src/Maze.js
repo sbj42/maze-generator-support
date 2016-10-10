@@ -46,10 +46,10 @@ function Maze(width, height) {
         throw new Error('invalid size: ' + width + 'x' + height);
     this._width = width;
     this._height = height;
-    this._grid = [];
     this._blockWidth = ((width+1)+15) >> 4;
+    this._grid = new Array(this._blockWidth * (height + 1));
     for (var i = 0; i < this._blockWidth * (height + 1); i ++)
-        this._grid.push(0);
+        this._grid[i] = 0;
 }
 
 /**
