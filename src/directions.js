@@ -18,7 +18,13 @@ dirs.ALL = [dirs.NORTH, dirs.EAST, dirs.SOUTH, dirs.WEST];
  * @return {Direction}
  */
 dirs.opposite = function(dir) {
-    return [dirs.SOUTH, dirs.WEST, dirs.NORTH, dirs.EAST][dir];
+    switch (dir) {
+        case 0/*dirs.NORTH*/: return 2;
+        case 1/*dirs.EAST*/: return 3;
+        case 2/*dirs.SOUTH*/: return 0;
+        case 3/*dirs.WEST*/: return 1;
+        default: throw new Error('bad direction: ' + dir);
+    }
 };
 
 /**
@@ -28,7 +34,13 @@ dirs.opposite = function(dir) {
  * @return {integer}
  */
 dirs.dx = function(dir) {
-    return [0, 1, 0, -1][dir];
+    switch (dir) {
+        case 0/*dirs.NORTH*/: return 0;
+        case 1/*dirs.EAST*/: return 1;
+        case 2/*dirs.SOUTH*/: return 0;
+        case 3/*dirs.WEST*/: return -1;
+        default: throw new Error('bad direction: ' + dir);
+    }
 };
 
 /**
@@ -38,9 +50,32 @@ dirs.dx = function(dir) {
  * @return {integer}
  */
 dirs.dy = function(dir) {
-    return [-1, 0, 1, 0][dir];
+    switch (dir) {
+        case 0/*dirs.NORTH*/: return -1;
+        case 1/*dirs.EAST*/: return 0;
+        case 2/*dirs.SOUTH*/: return 1;
+        case 3/*dirs.WEST*/: return 0;
+        default: throw new Error('bad direction: ' + dir);
+    }
 };
 
+/**
+ * Moves the coordinate in the given direction
+ *
+ * @param {integer} x
+ * @param {integer} y
+ * @param {Direction} dir
+ * @return {integer[]}
+ */
+dirs.move = function(x, y, dir) {
+    switch (dir) {
+        case 0/*dirs.NORTH*/: return [x, y-1];
+        case 1/*dirs.EAST*/: return [x+1, y];
+        case 2/*dirs.SOUTH*/: return [x, y+1];
+        case 3/*dirs.WEST*/: return [x-1, y];
+        default: throw new Error('bad direction: ' + dir);
+    }
+};
 
 /**
  * Returns a bitmask for the direction, useful for
