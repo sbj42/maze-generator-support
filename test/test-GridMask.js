@@ -75,6 +75,26 @@ describe('GridMask', function() {
         assert.equal(m1.get( 5,  5), true);
     });
 
+    describe('#clone()', function() {
+
+        it('should return a clone', function() {
+            var m1 = gen(7, 9);
+            m1.set(3, 4);
+            m1.set(1, 5);
+            m1.set(2, 2);
+            m1.set(2, 3);
+            m1.set(3, 2);
+            var m2 = m1.clone();
+            assert.ok(m1 !== m2, 'equal');
+            for (var y = 0 ; y < m1.height(); y ++) {
+                for (var x = 0; x < m1.width(); x ++) {
+                    assert.equal(m1.get(x, y), m2.get(x, y), 'not equal: ' + x + ',' + y);
+                }
+            }
+        });
+
+    }); // #set()
+
     describe('#set()', function() {
 
         it('should change the value at the given cell', function() {
