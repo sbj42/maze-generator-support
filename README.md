@@ -25,6 +25,19 @@ An array containing all the cardinal direction constants.
 
 Returns the opposite of the direction given.
 
+`dirs.dx(dir)`
+
+Returns the x component of the direction vector.
+
+`dirs.dy(dir)`
+
+Returns the y component of the direction vector.
+
+`dirs.move(x, y, dir)`
+
+Returns a coordinate pair one unit away from the given [x, y] in the given direction.
+Equivalent to `[x + dirs.dx(dir), y + dirs.dy(dir)]`.
+
 ## GridMask
 
 A rectangular grid of boolean values, useful for marking visited cells in a maze.
@@ -54,6 +67,11 @@ this returns `false`, or the value of `options.exterior` if given in the constru
 
 Sets the boolean value for the given cell.  Throws an error for cells outside the rectangular
 bounds.
+
+`GridMask.testAndSet(x, y, value)`
+
+Sets the boolean value for the given cell and returns `true` if the cell wasn't already set
+to that value.  Throws an error for cells outside the rectangular bounds.
 
 ## Maze
 

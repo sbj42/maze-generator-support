@@ -22,7 +22,7 @@ describe('GridMask', function() {
         assert.throws(function() { gen(10, -1); });
     });
 
-    it('should return a maze of the given size', function() {
+    it('should return a grid of the given size', function() {
         var m1 = gen(20, 20);
         assert.ok(isGridMask(m1));
         assert.equal(20, m1.width());
