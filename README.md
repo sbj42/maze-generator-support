@@ -1,4 +1,5 @@
-# maze-generator-support
+# maze-generator-core
+
 Support library for maze generator algorithms
 
 This library supplies support classes for the
